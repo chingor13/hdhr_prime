@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+require 'yaml'
+require 'optparse'
+require 'pp'
+
+channel = nil
+tuner = nil
+OptionParser.new do |opts|
+  opts.on "-t", "--tuner [TUNER]", "Tuner number" do |v|
+    tuner = v.to_i
+  end
+  opts.on "-c", "--channel [CHANNEL]", "Channel number" do |v|
+    channel = v.to_i
+  end
+end.parse!
+
+tuner ||= 0
+unless channel
+  puts "No channel specified"
+  exit 1
+end
+
+channels = YAML.load_file("data/channels.yml")
+channel_def = channels.detect{|channel_def| channel_def[:channel] == channel}
+
+if ARGV.length > 0
+  device = ARGV.first
+else
+  device = YAML.load(`ruby devices.rb`).first[:device]  
+end
+
+`hdhomerun_config #{device} set /tuner#{tuner}/channelmap us-cable`
+`hdhomerun_config #{device} set /tuner#{tuner}/channel #{channel_def[:cable]}`
+`hdhomerun_config #{device} set /tuner#{tuner}/program #{channel_def[:program]}`
+puts `hdhomerun_config #{device} get /tuner#{tuner}/debug`
+

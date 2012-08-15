@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+require 'yaml'
+require 'optparse'
+
+tuner = nil
+OptionParser.new do |opts|
+  opts.on "-t", "--tuner [TUNER]", "Tuner number" do |v|
+    tuner = v.to_i
+  end
+end.parse!
+
+tuner ||= 0
+ipaddr = `ipconfig getifaddr en0`.strip
+if ARGV.length > 0
+  device = ARGV.first
+else
+  device = YAML.load(`ruby devices.rb`).first[:device]  
+end
+
+`hdhomerun_config #{device} set /tuner#{tuner}/target udp://#{ipaddr}:5000`
+#`hdhomerun_config #{device} set /tuner#{tuner}/target rtp://239.255.1.1:5000`

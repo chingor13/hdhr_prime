@@ -1,0 +1,3 @@
+#!/bin/bash
+/Applications/VLC.app/Contents/MacOS/VLC udp://@:5000 > /dev/null 2>&1 &
+#/Applications/VLC.app/Contents/MacOS/VLC rtp://@239.255.1.1:5000 > /dev/null 2>&1 &
